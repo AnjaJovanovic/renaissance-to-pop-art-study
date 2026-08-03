@@ -1,0 +1,44 @@
+# virtualenv
+venv/
+.venv/
+env/
+
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# jupyter
+.ipynb_checkpoints/
+
+# ide / os
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# dataset (velik, drzi lokalno)
+Pandora_18k/
+
+# tezine modela / checkpointi
+*.h5
+*.keras
+*.pt
+*.pth
+*.ckpt
+*.onnx
+saved_models/
+checkpoints/
+wandb/
+runs/
+logs/
+*.log
+
+# privremeni izlazi
+*.npz
+.tmp/
+.cache/
