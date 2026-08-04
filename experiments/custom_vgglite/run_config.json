@@ -1,0 +1,10 @@
+{
+  "num_classes": 18,
+  "image_size": 224,
+  "batch_size": 32,
+  "epochs": 1,
+  "lr": 0.001,
+  "steps": 10,
+  "val_steps": 5,
+  "params": 1242674
+}

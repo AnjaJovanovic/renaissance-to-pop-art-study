@@ -37,6 +37,8 @@ wandb/
 runs/
 logs/
 *.log
+experiments/**/best.keras
+experiments/**/last.keras
 
 # privremeni izlazi
 *.npz
