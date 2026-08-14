@@ -1,4 +1,4 @@
-"""Treniranje VGG-lite modela."""
+# Treniranje VGG-lite modela
 
 import argparse
 import json
@@ -15,12 +15,11 @@ OUT_DIR = ROOT / "experiments" / "custom_vgglite"
 
 
 def parse_args():
-    p = argparse.ArgumentParser()
+    p = argparse.ArgumentParser(description="Treniranje VGG-lite na Pandora18K")
     p.add_argument("--epochs", type=int, default=20)
     p.add_argument("--batch-size", type=int, default=32)
     p.add_argument("--lr", type=float, default=1e-3)
     p.add_argument("--image-size", type=int, default=IMAGE_SIZE)
-    # za brzu proveru na CPU (npr. --steps 20); None = ceo skup
     p.add_argument("--steps", type=int, default=None)
     p.add_argument("--val-steps", type=int, default=None)
     return p.parse_args()
@@ -46,12 +45,14 @@ def main():
     history_csv = OUT_DIR / "history.csv"
 
     callbacks = [
+        # cuva tezine sa najboljom val_accuracy
         ModelCheckpoint(
             filepath=str(ckpt_path),
             monitor="val_accuracy",
             save_best_only=True,
             verbose=1,
         ),
+        # metrike po epohi u CSV
         CSVLogger(str(history_csv), append=False),
     ]
 
@@ -72,7 +73,7 @@ def main():
     with open(history_path, "w") as f:
         json.dump(history.history, f, indent=2)
 
-    # poslednji model (best je vec u best.keras)
+    # stanje posle poslednje epohe
     model.save(OUT_DIR / "last.keras")
 
     meta = {

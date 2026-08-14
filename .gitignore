@@ -44,3 +44,7 @@ experiments/**/last.keras
 *.npz
 .tmp/
 .cache/
+
+# veliki zipovi dataseta / rezultata
+Pandora_18k.zip
+*.zip

@@ -1,4 +1,4 @@
-"""VGG-lite CNN (Keras)."""
+# VGG-lite CNN
 
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -7,7 +7,7 @@ from dataset import IMAGE_SIZE, class_names
 
 
 def build_vgglite(num_classes=None, input_size=IMAGE_SIZE):
-    """Manji VGG: 32-32 | 64-64 | 128-128 | 256-256 + dense head."""
+    # manji VGG: 4 bloka (2x Conv + MaxPool), filteri 32/64/128/256, pa dense + softmax
     if num_classes is None:
         num_classes = len(class_names())
 
