@@ -1,0 +1,183 @@
+# Prepoznavanje umetničkih pokreta pomoću dubokih CNN mreža
+
+Klasifikacija slika umetničkih dela u jedan od **18 umetničkih pokreta** — od vizantijske
+ikonografije do pop arta — pomoću konvolucionih neuronskih mreža (CNN), na skupu podataka
+**Pandora 18K**.
+
+Projekat iz predmeta **Mašinsko učenje**, Matematički fakultet, Univerzitet u Beogradu.
+
+**Autori:** Anja Jovanović, Mateja Stojanović
+
+## Opis projekta
+
+Prepoznavanje umetničkog pokreta je zahtevnije od klasične klasifikacije objekata: klase
+nisu definisane sadržajem slike, već stilom — potezom kista, paletom, kompozicijom,
+stepenom apstrakcije. Uz to su granice između pokreta postepene (impresionizam i
+postimpresionizam se preklapaju i istorijski i vizuelno), pa je i za čoveka deo primera
+sporan.
+
+Na istom, fiksiranom skupu podataka poredimo dva pristupa:
+
+1. **CNN trenirana od nule** — VGG-lite baseline (četiri Conv-Conv-Pool bloka) i hibridna
+   arhitektura koja na tanji VGG stem dodaje Inception-stil granu sa paralelnim
+   1×1 / 3×3 / 5×5 konvolucijama.
+2. **Transfer learning** — pretrenirana ImageNet mreža (InceptionV3) sa novom
+   klasifikacionom glavom, pa fine-tuning poslednjeg konvolucionog bloka.
+
+Poređenje pokazuje koliko se dobija prenošenjem znanja sa ImageNet-a u domen u kojem
+oblik objekta nije glavni signal.
+
+Slučajno pogađanje za 18 klasa iznosi **5.56%**, što je donja granica za tumačenje svih
+rezultata.
+
+## Skup podataka
+
+**Pandora 18K** — 18 klasa umetničkih pokreta, organizovanih hijerarhijski po pokretu i
+zatim po autoru:
+
+```
+Pandora_18k/01_Byzantin_Iconography/Andrei Rublev/annunciation-1405.jpg
+Pandora_18k/09_Impressionism/...
+Pandora_18k/18_PopArt/...
+```
+
+Klase, hronološki: vizantijska ikonografija, rana renesansa, severna renesansa, visoka
+renesansa, barok, rokoko, romantizam, realizam, impresionizam, postimpresionizam,
+ekspresionizam, simbolizam, fovizam, kubizam, surrealizam, apstraktna umetnost, naivna
+umetnost, pop art.
+
+### Osnovna analiza
+
+Detaljna analiza je u `notebooks/01_eda.ipynb`, sa figurama u `reports/figures/`. Ključna
+zapažanja:
+
+- **Ukupno 18 038 slika** u 18 klasa.
+- Skup je **umereno nebalansiran**: najveća klasa je postimpresionizam (1 276 slika),
+  najmanja fovizam (719). Odnos najveće i najmanje klase je oko **1.8 : 1** — dovoljno
+  ravnomerno da nije bilo potrebe za preuzorkovanjem, ali dovoljno neravnomerno da
+  accuracy treba čitati zajedno sa metrikama po klasi.
+- Dimenzije slika se **jako razlikuju** (`reports/figures/size_scatter.png`,
+  `size_histograms.png`) — od malih skenova do velikih reprodukcija, sa različitim odnosom
+  širine i visine. Zato se sve slike skaliraju na fiksnih **224×224**.
+- Vizuelno preklapanje između srodnih pokreta (impresionizam ↔ postimpresionizam, rana ↔
+  visoka renesansa) vidi se već na uzorku po klasi (`reports/figures/sample_grid.png`) i
+  očekuje se kao glavni izvor greške.
+
+### Podela na trening, validaciju i test
+
+| Skup | Slika | Udeo |
+|---|---|---|
+| trening | 12 626 | 70% |
+| validacija | 2 706 | 15% |
+| test | 2 706 | 15% |
+| **ukupno** | **18 038** | 100% |
+
+Podela je **stratifikovana po klasi** (svih 18 pokreta zastupljeno je u sva tri skupa u
+istom odnosu) i **fiksirana pseudoslučajnim semenom** `SEED = 42`. Rezultat je zapisan u
+`data/splits/train.csv`, `val.csv` i `test.csv` i **više se ne menja** — svi modeli se
+treniraju i porede na identičnoj podeli.
+
+Test skup se koristi **isključivo za finalnu evaluaciju**. Izbor arhitekture,
+hiperparametara i broja epoha rađen je samo na osnovu validacionog skupa. Augmentacija
+(horizontalno preslikavanje, rotacija do 10°, zoom do 10%) primenjuje se **samo na
+trening**; validacija i test se samo skaliraju, da evaluacija bude stabilna i ponovljiva.
+
+## Podešavanje okruženja
+
+Potreban je Python 3.10+.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Spisak paketa (`requirements.txt`): `tensorflow>=2.15`, `numpy<2`, `pandas`,
+`matplotlib`, `scikit-learn`, `Pillow`, `jupyter`.
+
+**Skup podataka nije u repozitorijumu** (velik je, a deo slika je pod autorskim pravima —
+vidi `Pandora_18k/Readme_Pandora18k.txt`). Folder `Pandora_18k/` treba raspakovati u koren
+projekta, tako da putanje iz `data/splits/*.csv` budu ispravne. U git-u su samo liste
+putanja, kod, metrike i figure.
+
+Provera da okruženje i pipeline rade — ispisuje broj klasa i dimenzije jednog batch-a:
+
+```bash
+python dataset.py
+```
+
+Ako postoji GPU, dobro je proveriti da ga TensorFlow vidi:
+
+```bash
+python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+```
+
+## Struktura projekta
+
+```
+dataset.py            ucitavanje fiksiranih split-ova + Keras generatori
+models.py             build_vgglite() i build_hybrid()
+train.py              trening skripta sa CLI argumentima
+plot_curves.py        crtanje accuracy/loss krivih iz history.csv
+notebooks/            sveske u redosledu pregledanja (01, 02, ...)
+data/splits/          fiksirane train/val/test liste putanja
+experiments/          po modelu: history.csv/json, run_config.json, test_metrics.json
+reports/figures/      figure za izvestaj
+```
+
+Sveske se pregledaju po prefiksu:
+
+| Sveska | Sadržaj |
+|---|---|
+| `01_eda.ipynb` | analiza skupa: broj slika po klasi, dimenzije, uzorci |
+| `02_split.ipynb` | stratifikovana podela na trening/validaciju/test |
+| `03_vgglite.ipynb` | VGG-lite arhitektura |
+| `04_train_vgglite.ipynb` | treniranje VGG-lite modela |
+| `05_vgglite_results.ipynb` | krive učenja i evaluacija VGG-lite modela |
+
+## Pokretanje
+
+Pregled arhitektura i broja parametara:
+
+```bash
+python models.py
+```
+
+Treniranje:
+
+```bash
+python train.py --model vgglite --epochs 20 --batch-size 64 --lr 1e-3
+python train.py --model hybrid  --epochs 20
+```
+
+Argumenti: `--model {vgglite,hybrid}`, `--epochs`, `--batch-size`, `--lr`,
+`--image-size`, `--steps`, `--val-steps`. Zadnja dva ograničavaju broj koraka po epohi i
+korisni su za brzu proveru da sve radi, bez čekanja punog treninga.
+
+Rezultati se upisuju u `experiments/custom_<model>/`:
+
+- `best.keras` — težine sa najboljim `val_accuracy`
+- `last.keras` — model posle poslednje epohe
+- `history.csv`, `history.json` — metrike po epohi (trening i validacija)
+- `run_config.json` — hiperparametri tog pokretanja
+
+Krive učenja:
+
+```bash
+python plot_curves.py
+```
+
+## Literatura
+
+- C. Florea, C. Toca, F. Gieske. *Artistic Movement Recognition by Boosted Fusion of Color
+  Structure and Topographic Description.* IEEE Winter Conference on Applications of
+  Computer Vision (WACV), Santa Rosa, CA, USA, 2017. — rad koji opisuje Pandora 18K skup i
+  koji autori skupa traže da se citira.
+- Y. Yu, O. Jin, D. Hsu. *Artistic Movement Recognition using Deep CNNs.* Stanford
+  University, CS231n, 2017.
+  [cs231n.stanford.edu/reports/2017/pdfs/411.pdf](https://cs231n.stanford.edu/reports/2017/pdfs/411.pdf)
+  — polazna tačka za temu i arhitekture; njihova hibridna VGG + Inception mreža trenirana
+  od nule postiže 31.2%, a najbolji rezultat transfer learning-om na InceptionV3 iznosi
+  56.6%.
+- Dokumentacija Keras / TensorFlow: `ImageDataGenerator`, `InceptionV3`, transfer learning
+  i fine-tuning.
