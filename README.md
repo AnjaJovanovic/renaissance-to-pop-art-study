@@ -118,6 +118,7 @@ python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU')
 src/
   dataset.py          ucitavanje fiksiranih split-ova + Keras generatori
   models.py           build_vgglite() i build_hybrid()
+  transfer.py         InceptionV3: kesiranje feature-a + dense glava
   train.py            trening skripta sa CLI argumentima
   evaluate.py         evaluacija sacuvanog modela na test skupu
   plot_curves.py      crtanje accuracy/loss krivih iz history.csv
@@ -168,6 +169,30 @@ Krive učenja:
 ```bash
 python src/plot_curves.py
 ```
+
+### Transfer learning
+
+InceptionV3 sa ImageNet težinama, zamrznutom bazom i novom glavom. Ulaz je **299×299**
+(nativna veličina te mreže), za razliku od 224×224 kod custom modela.
+
+Baza se ne prolazi iznova svake epohe — njeni 2048-dimenzioni izlazi se **keširaju** jednom
+na disk, pa se glava trenira nad vektorima:
+
+```bash
+python src/transfer.py --stage cache          # jednokratno, sporo
+python src/transfer.py --stage dense --epochs 100
+python src/plot_curves.py --model transfer_dense
+```
+
+Bez argumenata (`python src/transfer.py`) rade se obe faze redom. Keš stoji u
+`experiments/transfer_dense/features/` i nije u git-u.
+
+Cena keširanja je što **augmentacija otpada** — svaka slika prolazi kroz bazu tačno jednom, pa
+se protiv preprilagođavanja radi dropout-om u glavi (`--dropout`, podrazumevano 0.5).
+
+Predobrada za InceptionV3 (opseg `[-1, 1]`) je ugrađena **u sam model**, kao prvi `Rescaling`
+sloj, dok generatori i dalje daju `[0, 1]` kao za custom modele. Zato sačuvani model prima
+sirove slike i evaluira se istom skriptom kao i ostali.
 
 Evaluacija na test skupu — pokreće se **tek na kraju**, nad sačuvanim `best.keras`:
 

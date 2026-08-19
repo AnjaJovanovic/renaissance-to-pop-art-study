@@ -48,3 +48,7 @@ experiments/**/last.keras
 # veliki zipovi dataseta / rezultata
 Pandora_18k.zip
 *.zip
+
+# kes feature-a i privremeni smoke eksperimenti
+experiments/**/features/
+experiments/_smoke_*/
