@@ -92,8 +92,35 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Spisak paketa (`requirements.txt`): `tensorflow>=2.15`, `numpy<2`, `pandas`,
+Spisak paketa (`requirements.txt`): `tensorflow>=2.15`, `tf-keras`, `numpy<2`, `pandas`,
 `matplotlib`, `scikit-learn`, `Pillow`, `jupyter`.
+
+### Keras 2 režim (obavezno)
+
+Na Pythonu 3.12 `pip` povlači TensorFlow 2.16 ili noviji, koji podrazumevano koristi **Keras 3**,
+a Keras 3 je izbacio `ImageDataGenerator`, na kome stoji ceo `src/dataset.py`. Zato je uz
+TensorFlow potreban paket `tf-keras` i promenljiva koja vraća stari API:
+
+```bash
+export TF_USE_LEGACY_KERAS=1
+```
+
+Najlakše je dopisati je u `.venv/bin/activate`, da važi pri svakoj aktivaciji. Provera:
+
+```bash
+python -c "import tensorflow as tf; print(tf.keras.__name__)"
+```
+
+Treba da ispiše `tf_keras...`. Ako piše `keras...`, promenljiva nije aktivna.
+
+### GPU na WSL2
+
+`pip install "tensorflow[and-cuda]"` instalira CUDA biblioteke, ali ih TensorFlow ne pronalazi
+sam jer nisu na `LD_LIBRARY_PATH`. Rešenje je isto — dopisati u `.venv/bin/activate`:
+
+```bash
+export LD_LIBRARY_PATH="$(ls -d "$VIRTUAL_ENV"/lib/python*/site-packages/nvidia/*/lib | tr '\n' ':')$LD_LIBRARY_PATH"
+```
 
 **Skup podataka nije u repozitorijumu** (velik je, a deo slika je pod autorskim pravima —
 vidi `Pandora_18k/Readme_Pandora18k.txt`). Folder `Pandora_18k/` treba raspakovati u koren
