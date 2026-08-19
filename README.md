@@ -119,6 +119,7 @@ src/
   dataset.py          ucitavanje fiksiranih split-ova + Keras generatori
   models.py           build_vgglite() i build_hybrid()
   train.py            trening skripta sa CLI argumentima
+  evaluate.py         evaluacija sacuvanog modela na test skupu
   plot_curves.py      crtanje accuracy/loss krivih iz history.csv
 notebooks/            sveske u redosledu pregledanja (01, 02, ...)
 data/splits/          fiksirane train/val/test liste putanja
@@ -167,6 +168,21 @@ Krive učenja:
 ```bash
 python src/plot_curves.py
 ```
+
+Evaluacija na test skupu — pokreće se **tek na kraju**, nad sačuvanim `best.keras`:
+
+```bash
+python src/evaluate.py --model vgglite
+python src/evaluate.py --model hybrid
+```
+
+Veličina slike se čita iz `run_config.json` tog eksperimenta, da bi se poklopila sa
+treningom. Skripta dopisuje u `experiments/custom_<model>/`:
+
+- `test_metrics.json` — test accuracy/loss, macro i weighted F1, broj parametara
+- `classification_report.txt`, `.json` — precision/recall/F1 po klasi
+- `confusion_matrix.csv` i `confusion_matrix.png` (kopija figure ide i u
+  `reports/figures/<model>_confusion.png`)
 
 ## Literatura
 
