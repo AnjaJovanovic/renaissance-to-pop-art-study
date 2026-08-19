@@ -10,7 +10,8 @@ from tensorflow.keras.callbacks import CSVLogger, ModelCheckpoint
 from dataset import IMAGE_SIZE, make_generators
 from models import build_hybrid, build_vgglite
 
-ROOT = Path(__file__).resolve().parent
+# repo root je jedan nivo iznad src/
+ROOT = Path(__file__).resolve().parents[1]
 
 BUILDERS = {
     "vgglite": build_vgglite,

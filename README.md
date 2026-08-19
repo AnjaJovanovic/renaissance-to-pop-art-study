@@ -103,7 +103,7 @@ putanja, kod, metrike i figure.
 Provera da okruženje i pipeline rade — ispisuje broj klasa i dimenzije jednog batch-a:
 
 ```bash
-python dataset.py
+python src/dataset.py
 ```
 
 Ako postoji GPU, dobro je proveriti da ga TensorFlow vidi:
@@ -115,10 +115,11 @@ python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU')
 ## Struktura projekta
 
 ```
-dataset.py            ucitavanje fiksiranih split-ova + Keras generatori
-models.py             build_vgglite() i build_hybrid()
-train.py              trening skripta sa CLI argumentima
-plot_curves.py        crtanje accuracy/loss krivih iz history.csv
+src/
+  dataset.py          ucitavanje fiksiranih split-ova + Keras generatori
+  models.py           build_vgglite() i build_hybrid()
+  train.py            trening skripta sa CLI argumentima
+  plot_curves.py      crtanje accuracy/loss krivih iz history.csv
 notebooks/            sveske u redosledu pregledanja (01, 02, ...)
 data/splits/          fiksirane train/val/test liste putanja
 experiments/          po modelu: history.csv/json, run_config.json, test_metrics.json
@@ -140,14 +141,14 @@ Sveske se pregledaju po prefiksu:
 Pregled arhitektura i broja parametara:
 
 ```bash
-python models.py
+python src/models.py
 ```
 
 Treniranje:
 
 ```bash
-python train.py --model vgglite --epochs 20 --batch-size 64 --lr 1e-3
-python train.py --model hybrid  --epochs 20
+python src/train.py --model vgglite --epochs 20 --batch-size 64 --lr 1e-3
+python src/train.py --model hybrid  --epochs 20
 ```
 
 Argumenti: `--model {vgglite,hybrid}`, `--epochs`, `--batch-size`, `--lr`,
@@ -164,7 +165,7 @@ Rezultati se upisuju u `experiments/custom_<model>/`:
 Krive učenja:
 
 ```bash
-python plot_curves.py
+python src/plot_curves.py
 ```
 
 ## Literatura

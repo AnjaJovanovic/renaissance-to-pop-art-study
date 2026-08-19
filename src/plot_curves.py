@@ -6,7 +6,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parent
+# repo root je jedan nivo iznad src/
+ROOT = Path(__file__).resolve().parents[1]
 HIST_PATH = ROOT / "experiments" / "custom_vgglite" / "history.csv"
 OUT_EXP = ROOT / "experiments" / "custom_vgglite" / "curves.png"
 OUT_FIG = ROOT / "reports" / "figures" / "vgglite_curves.png"
