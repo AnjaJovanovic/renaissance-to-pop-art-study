@@ -137,6 +137,7 @@ Sveske se pregledaju po prefiksu:
 | `03_vgglite.ipynb` | VGG-lite arhitektura |
 | `04_train_vgglite.ipynb` | treniranje VGG-lite modela |
 | `05_vgglite_results.ipynb` | krive učenja i evaluacija VGG-lite modela |
+| `06_transfer.ipynb` | transfer learning sa InceptionV3 |
 
 ## Pokretanje
 

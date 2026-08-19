@@ -1,0 +1,13 @@
+{
+  "model": "transfer_dense",
+  "num_classes": 18,
+  "image_size": 299,
+  "batch_size": 64,
+  "epochs": 100,
+  "lr": 0.001,
+  "dropout": 0.5,
+  "params": 21839666,
+  "trainable_params": 36882,
+  "cached_features": true,
+  "augmentation": false
+}

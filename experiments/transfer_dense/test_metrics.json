@@ -1,0 +1,11 @@
+{
+  "model": "transfer_dense",
+  "weights": "experiments/transfer_dense/best.keras",
+  "image_size": 299,
+  "params": 21839666,
+  "test_accuracy": 0.49926090240478516,
+  "test_loss": 1.469786524772644,
+  "macro_f1": 0.4965189588758317,
+  "weighted_f1": 0.4912331402532059,
+  "num_test_images": 2706
+}
