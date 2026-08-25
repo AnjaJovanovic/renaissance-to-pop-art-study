@@ -3,7 +3,8 @@ from pathlib import Path
 import pandas as pd
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-ROOT = Path(__file__).resolve().parent
+# repo root je jedan nivo iznad src/
+ROOT = Path(__file__).resolve().parents[1]
 SPLITS_DIR = ROOT / "data" / "splits"
 
 # ulazna velicina slike za mrezu

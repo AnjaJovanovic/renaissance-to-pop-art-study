@@ -92,8 +92,35 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Spisak paketa (`requirements.txt`): `tensorflow>=2.15`, `numpy<2`, `pandas`,
+Spisak paketa (`requirements.txt`): `tensorflow>=2.15`, `tf-keras`, `numpy<2`, `pandas`,
 `matplotlib`, `scikit-learn`, `Pillow`, `jupyter`.
+
+### Keras 2 režim (obavezno)
+
+Na Pythonu 3.12 `pip` povlači TensorFlow 2.16 ili noviji, koji podrazumevano koristi **Keras 3**,
+a Keras 3 je izbacio `ImageDataGenerator`, na kome stoji ceo `src/dataset.py`. Zato je uz
+TensorFlow potreban paket `tf-keras` i promenljiva koja vraća stari API:
+
+```bash
+export TF_USE_LEGACY_KERAS=1
+```
+
+Najlakše je dopisati je u `.venv/bin/activate`, da važi pri svakoj aktivaciji. Provera:
+
+```bash
+python -c "import tensorflow as tf; print(tf.keras.__name__)"
+```
+
+Treba da ispiše `tf_keras...`. Ako piše `keras...`, promenljiva nije aktivna.
+
+### GPU na WSL2
+
+`pip install "tensorflow[and-cuda]"` instalira CUDA biblioteke, ali ih TensorFlow ne pronalazi
+sam jer nisu na `LD_LIBRARY_PATH`. Rešenje je isto — dopisati u `.venv/bin/activate`:
+
+```bash
+export LD_LIBRARY_PATH="$(ls -d "$VIRTUAL_ENV"/lib/python*/site-packages/nvidia/*/lib | tr '\n' ':')$LD_LIBRARY_PATH"
+```
 
 **Skup podataka nije u repozitorijumu** (velik je, a deo slika je pod autorskim pravima —
 vidi `Pandora_18k/Readme_Pandora18k.txt`). Folder `Pandora_18k/` treba raspakovati u koren
@@ -103,7 +130,7 @@ putanja, kod, metrike i figure.
 Provera da okruženje i pipeline rade — ispisuje broj klasa i dimenzije jednog batch-a:
 
 ```bash
-python dataset.py
+python src/dataset.py
 ```
 
 Ako postoji GPU, dobro je proveriti da ga TensorFlow vidi:
@@ -115,10 +142,13 @@ python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU')
 ## Struktura projekta
 
 ```
-dataset.py            ucitavanje fiksiranih split-ova + Keras generatori
-models.py             build_vgglite() i build_hybrid()
-train.py              trening skripta sa CLI argumentima
-plot_curves.py        crtanje accuracy/loss krivih iz history.csv
+src/
+  dataset.py          ucitavanje fiksiranih split-ova + Keras generatori
+  models.py           build_vgglite() i build_hybrid()
+  transfer.py         InceptionV3: kesiranje feature-a + dense glava
+  train.py            trening skripta sa CLI argumentima
+  evaluate.py         evaluacija sacuvanog modela na test skupu
+  plot_curves.py      crtanje accuracy/loss krivih iz history.csv
 notebooks/            sveske u redosledu pregledanja (01, 02, ...)
 data/splits/          fiksirane train/val/test liste putanja
 experiments/          po modelu: history.csv/json, run_config.json, test_metrics.json
@@ -134,20 +164,21 @@ Sveske se pregledaju po prefiksu:
 | `03_vgglite.ipynb` | VGG-lite arhitektura |
 | `04_train_vgglite.ipynb` | treniranje VGG-lite modela |
 | `05_vgglite_results.ipynb` | krive učenja i evaluacija VGG-lite modela |
+| `06_transfer.ipynb` | transfer learning sa InceptionV3 |
 
 ## Pokretanje
 
 Pregled arhitektura i broja parametara:
 
 ```bash
-python models.py
+python src/models.py
 ```
 
 Treniranje:
 
 ```bash
-python train.py --model vgglite --epochs 20 --batch-size 64 --lr 1e-3
-python train.py --model hybrid  --epochs 20
+python src/train.py --model vgglite --epochs 20 --batch-size 64 --lr 1e-3
+python src/train.py --model hybrid  --epochs 20
 ```
 
 Argumenti: `--model {vgglite,hybrid}`, `--epochs`, `--batch-size`, `--lr`,
@@ -164,8 +195,47 @@ Rezultati se upisuju u `experiments/custom_<model>/`:
 Krive učenja:
 
 ```bash
-python plot_curves.py
+python src/plot_curves.py
 ```
+
+### Transfer learning
+
+InceptionV3 sa ImageNet težinama, zamrznutom bazom i novom glavom. Ulaz je **299×299**
+(nativna veličina te mreže), za razliku od 224×224 kod custom modela.
+
+Baza se ne prolazi iznova svake epohe — njeni 2048-dimenzioni izlazi se **keširaju** jednom
+na disk, pa se glava trenira nad vektorima:
+
+```bash
+python src/transfer.py --stage cache          # jednokratno, sporo
+python src/transfer.py --stage dense --epochs 100
+python src/plot_curves.py --model transfer_dense
+```
+
+Bez argumenata (`python src/transfer.py`) rade se obe faze redom. Keš stoji u
+`experiments/transfer_dense/features/` i nije u git-u.
+
+Cena keširanja je što **augmentacija otpada** — svaka slika prolazi kroz bazu tačno jednom, pa
+se protiv preprilagođavanja radi dropout-om u glavi (`--dropout`, podrazumevano 0.5).
+
+Predobrada za InceptionV3 (opseg `[-1, 1]`) je ugrađena **u sam model**, kao prvi `Rescaling`
+sloj, dok generatori i dalje daju `[0, 1]` kao za custom modele. Zato sačuvani model prima
+sirove slike i evaluira se istom skriptom kao i ostali.
+
+Evaluacija na test skupu — pokreće se **tek na kraju**, nad sačuvanim `best.keras`:
+
+```bash
+python src/evaluate.py --model vgglite
+python src/evaluate.py --model hybrid
+```
+
+Veličina slike se čita iz `run_config.json` tog eksperimenta, da bi se poklopila sa
+treningom. Skripta dopisuje u `experiments/custom_<model>/`:
+
+- `test_metrics.json` — test accuracy/loss, macro i weighted F1, broj parametara
+- `classification_report.txt`, `.json` — precision/recall/F1 po klasi
+- `confusion_matrix.csv` i `confusion_matrix.png` (kopija figure ide i u
+  `reports/figures/<model>_confusion.png`)
 
 ## Literatura
 
