@@ -1,4 +1,11 @@
 {
-  "test_accuracy": 0.29711753129959106,
-  "test_loss": 2.1079
+  "model": "hybrid",
+  "weights": "experiments/custom_hybrid/best.keras",
+  "image_size": 224,
+  "params": 57434,
+  "test_accuracy": 0.2771618664264679,
+  "test_loss": 2.1001698970794678,
+  "macro_f1": 0.238342881646893,
+  "weighted_f1": 0.23909480240569828,
+  "num_test_images": 2706
 }
