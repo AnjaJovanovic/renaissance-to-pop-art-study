@@ -1,0 +1,11 @@
+{
+  "model": "transfer_finetune",
+  "weights": "experiments/transfer_finetune/best.keras",
+  "image_size": 299,
+  "params": 21839666,
+  "test_accuracy": 0.5691056847572327,
+  "test_loss": 1.379070520401001,
+  "macro_f1": 0.5704462056371181,
+  "weighted_f1": 0.5657392798745052,
+  "num_test_images": 2706
+}
