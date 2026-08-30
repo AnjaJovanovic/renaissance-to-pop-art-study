@@ -165,6 +165,8 @@ Sveske se pregledaju po prefiksu:
 | `04_train_vgglite.ipynb` | treniranje VGG-lite modela |
 | `05_vgglite_results.ipynb` | krive učenja i evaluacija VGG-lite modela |
 | `06_transfer.ipynb` | transfer learning sa InceptionV3 |
+| `07_error_analysis.ipynb` | analiza grešaka: InceptionV3 sa dense glavom |
+| `08_error_analysis_finetune.ipynb` | analiza grešaka najboljeg modela i poređenje sa dense fazom |
 
 ## Pokretanje
 
@@ -261,6 +263,34 @@ treningom. Skripta dopisuje u `experiments/custom_<model>/`:
 - `classification_report.txt`, `.json` — precision/recall/F1 po klasi
 - `confusion_matrix.csv` i `confusion_matrix.png` (kopija figure ide i u
   `reports/figures/<model>_confusion.png`)
+
+## Figure
+
+Sve figure se čuvaju u `reports/figures/`. Nijedna se ne crta ručno — svaka nastaje
+pokretanjem sveske ili skripte iz tabele ispod, pa se ceo skup može regenerisati.
+
+| Figura | Gde nastaje | Šta prikazuje |
+|---|---|---|
+| `class_counts.png` | `01_eda.ipynb` | broj slika po klasi |
+| `size_scatter.png` | `01_eda.ipynb` | širina × visina svih slika |
+| `size_histograms.png` | `01_eda.ipynb` | histogrami širine, visine i odnosa stranica |
+| `size_histograms_split.png` | `01_eda.ipynb` | iste raspodele razdvojene po orijentaciji |
+| `sample_grid.png` | `01_eda.ipynb` | po jedan uzorak iz svake od 18 klasa |
+| `<model>_curves.png` | `src/plot_curves.py --model <model>` | accuracy i loss po epohi, train vs val |
+| `<model>_confusion.png` | `src/evaluate.py --model <model>` | matrica konfuzije 18×18, normalizovana po redu |
+| `transfer_dense_recall_per_class.png` | `07_error_analysis.ipynb` | recall po klasi, dense glava |
+| `transfer_dense_errors.png` | `07_error_analysis.ipynb` | 8 najsigurnijih promašaja, dense glava |
+| `transfer_finetune_recall_per_class.png` | `08_error_analysis_finetune.ipynb` | recall po klasi, najbolji model |
+| `transfer_finetune_vs_dense_recall.png` | `08_error_analysis_finetune.ipynb` | promena recall-a fine-tune naspram dense |
+| `transfer_finetune_errors.png` | `08_error_analysis_finetune.ipynb` | 8 najsigurnijih promašaja, najbolji model |
+| `transfer_finetune_confidence.png` | `08_error_analysis_finetune.ipynb` | raspodela sigurnosti, tačne vs pogrešne predikcije |
+
+`<model>` je ime eksperimenta: `vgglite`, `hybrid`, `transfer_dense`, `transfer_finetune`.
+Skripte `plot_curves.py` i `evaluate.py` pišu figuru na dva mesta — u folder eksperimenta i
+kao kopiju u `reports/figures/` — s tim što su PNG-ovi unutar `experiments/` gitignore-ovani,
+pa u repozitorijum ulazi samo kopija.
+
+Sveske dodatno drže figure u svojim izlazima, tako da se vide i bez ponovnog pokretanja.
 
 ## Literatura
 
