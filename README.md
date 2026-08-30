@@ -6,7 +6,7 @@ ikonografije do pop arta — pomoću konvolucionih neuronskih mreža (CNN), na s
 
 Projekat iz predmeta **Mašinsko učenje**, Matematički fakultet, Univerzitet u Beogradu.
 
-**Autori:** Anja Jovanović, Mateja Stojanović
+**Autori:** Anja Jovanović 1044/2025, Mateja Stojanović 1107/2025
 
 ## Opis projekta
 
