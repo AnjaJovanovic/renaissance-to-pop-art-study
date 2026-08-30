@@ -1,0 +1,25 @@
+                         precision    recall  f1-score   support
+
+01_Byzantin_Iconography       0.88      0.94      0.90       127
+   02_Early_Renaissance       0.75      0.74      0.75       112
+03_Northern_Renaissance       0.69      0.61      0.65       123
+    04_High_Renaissance       0.56      0.66      0.61       125
+             05_Baroque       0.46      0.49      0.48       148
+              06_Rococo       0.54      0.58      0.56       125
+         07_Romanticism       0.40      0.42      0.41       134
+             08_Realism       0.47      0.45      0.46       180
+       09_Impressionism       0.51      0.58      0.55       189
+  10_Post_Impressionism       0.40      0.40      0.40       192
+       11_Expressionism       0.38      0.27      0.32       154
+           12_Symbolism       0.58      0.53      0.55       159
+             13_Fauvism       0.48      0.38      0.42       108
+              14_Cubism       0.68      0.67      0.68       184
+          15_Surrealism       0.50      0.60      0.54       161
+         16_AbstractArt       0.66      0.67      0.66       159
+            17_NaiveArt       0.61      0.52      0.56       158
+              18_PopArt       0.73      0.82      0.77       168
+
+               accuracy                           0.57      2706
+              macro avg       0.57      0.57      0.57      2706
+           weighted avg       0.57      0.57      0.57      2706
+

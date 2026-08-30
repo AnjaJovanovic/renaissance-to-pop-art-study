@@ -145,7 +145,7 @@ python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU')
 src/
   dataset.py          ucitavanje fiksiranih split-ova + Keras generatori
   models.py           build_vgglite() i build_hybrid()
-  transfer.py         InceptionV3: kesiranje feature-a + dense glava
+  transfer.py         InceptionV3: kesiranje feature-a, dense glava, fine-tuning
   train.py            trening skripta sa CLI argumentima
   evaluate.py         evaluacija sacuvanog modela na test skupu
   plot_curves.py      crtanje accuracy/loss krivih iz history.csv
@@ -222,11 +222,36 @@ Predobrada za InceptionV3 (opseg `[-1, 1]`) je ugrađena **u sam model**, kao pr
 sloj, dok generatori i dalje daju `[0, 1]` kao za custom modele. Zato sačuvani model prima
 sirove slike i evaluira se istom skriptom kao i ostali.
 
+### Fine-tuning
+
+Druga faza odmrzava **poslednji Inception blok** (od sloja `mixed9`) i uči ga zajedno sa
+glavom, sa learning rate-om nižim za dva reda veličine:
+
+```bash
+python src/transfer.py --stage finetune
+python src/plot_curves.py --model transfer_finetune
+```
+
+Rezultati idu u `experiments/transfer_finetune/`, odvojeno od dense faze. Glava se ne uči
+iznova — inicijalizuje se iz `experiments/transfer_dense/head_best.keras`, jer bi nasumična
+glava prvim gradijentima pokvarila pretrenirane težine baze.
+
+Čim se baza odmrzne, **keš više ne važi** (izlazi baze se menjaju svake epohe), pa se ovde
+ide kroz same slike. Epoha je zato bitno sporija nego u dense fazi, ali augmentacija sada
+ponovo radi i koristi se ista `dataset.make_generators` konvencija kao kod custom modela.
+
+`BatchNormalization` slojevi ostaju zamrznuti i baza se poziva sa `training=False` — sa malim
+batch-om bi svežih nekoliko epoha pokvarilo ImageNet statistike i model bi propao.
+
+Podrazumevano: `--ft-lr 1e-5`, `--ft-epochs 30`, `--ft-batch-size 16`, early stopping po
+`val_accuracy` sa `--patience 6`. Ako pukne memorija GPU-a, spustiti `--ft-batch-size`.
+
 Evaluacija na test skupu — pokreće se **tek na kraju**, nad sačuvanim `best.keras`:
 
 ```bash
 python src/evaluate.py --model vgglite
 python src/evaluate.py --model hybrid
+python src/evaluate.py --model transfer_finetune --exp-dir experiments/transfer_finetune
 ```
 
 Veličina slike se čita iz `run_config.json` tog eksperimenta, da bi se poklopila sa
