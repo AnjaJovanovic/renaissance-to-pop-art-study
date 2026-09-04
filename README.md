@@ -212,6 +212,7 @@ Sveske se pregledaju po prefiksu:
 | `06_transfer.ipynb` | transfer learning sa InceptionV3 |
 | `07_error_analysis.ipynb` | analiza grešaka: InceptionV3 sa dense glavom |
 | `08_error_analysis_finetune.ipynb` | analiza grešaka najboljeg modela i poređenje sa dense fazom |
+| `09_demo.ipynb` | demo sveska |
 
 ## Pokretanje
 
