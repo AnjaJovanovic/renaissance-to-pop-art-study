@@ -82,6 +82,37 @@ hiperparametara i broja epoha rađen je samo na osnovu validacionog skupa. Augme
 (horizontalno preslikavanje, rotacija do 10°, zoom do 10%) primenjuje se **samo na
 trening**; validacija i test se samo skaliraju, da evaluacija bude stabilna i ponovljiva.
 
+## Rezultati
+
+Svi modeli su trenirani i evaluirani na identičnoj podeli. Test skup je korišćen samo za
+finalnu evaluaciju.
+
+| Model | Parametara | Trenabilnih | Ulaz | Epoha | Najbolji val acc | **Test acc** | Macro F1 |
+|---|---|---|---|---|---|---|---|
+| VGG-lite | 1 242 674 | 1 242 674 | 224×224 | 20 | 33.85% | 35.14% | 0.330 |
+| Hibrid | 57 434 | 57 434 | 224×224 | 20 | 28.09% | 27.72% | 0.238 |
+| Transfer dense | 21 839 666 | 36 882 | 299×299 | 100 | 52.77% | 49.93% | 0.497 |
+| **Transfer fine-tune** | 21 839 666 | 6 107 154 | 299×299 | 28 | **59.57%** | **56.91%** | **0.570** |
+
+Najbolji je **fine-tune poslednjeg Inception bloka** — 56.91%, u referentnom opsegu iz rada
+koji se replicira (56.6%) i preko deset puta iznad slučajnog pogađanja (5.56%). Detaljno
+poređenje je u `experiments/comparison_all.md` i `experiments/comparison_transfer.md`.
+
+### Preuzimanje istreniranih modela
+
+Težine (`*.keras`) nisu u git-u. Sva četiri `best.keras` fajla su objavljena kao release:
+
+**[v1.0-models](https://github.com/AnjaJovanovic/renaissance-to-pop-art-study/releases/tag/v1.0-models)** — `pandora18k_models.zip` (230 MB)
+
+```bash
+curl -L -o models.zip https://github.com/AnjaJovanovic/renaissance-to-pop-art-study/releases/download/v1.0-models/pandora18k_models.zip
+unzip models.zip          # iz korena repozitorijuma
+```
+
+Putanje u arhivi su relativne prema korenu, pa svaki model završi u svom
+`experiments/<eksperiment>/best.keras`, uz pripadajući `run_config.json`. Posle toga se
+evaluacija pokreće bez ponovnog treniranja.
+
 ## Podešavanje okruženja
 
 Potreban je Python 3.10+.
@@ -253,11 +284,15 @@ Evaluacija na test skupu — pokreće se **tek na kraju**, nad sačuvanim `best.
 ```bash
 python src/evaluate.py --model vgglite
 python src/evaluate.py --model hybrid
-python src/evaluate.py --model transfer_finetune --exp-dir experiments/transfer_finetune
+python src/evaluate.py --exp-dir experiments/transfer_dense
+python src/evaluate.py --exp-dir experiments/transfer_finetune
 ```
 
+`--model <ime>` se razrešava u `experiments/custom_<ime>`, pa transfer eksperimenti idu
+preko `--exp-dir`.
+
 Veličina slike se čita iz `run_config.json` tog eksperimenta, da bi se poklopila sa
-treningom. Skripta dopisuje u `experiments/custom_<model>/`:
+treningom. Skripta dopisuje u folder tog eksperimenta:
 
 - `test_metrics.json` — test accuracy/loss, macro i weighted F1, broj parametara
 - `classification_report.txt`, `.json` — precision/recall/F1 po klasi
