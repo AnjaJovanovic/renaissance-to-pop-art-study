@@ -55,3 +55,9 @@ experiments/_smoke_*/
 
 # figure eksperimenta (verzionise se samo kopija u reports/figures/)
 experiments/**/*.png
+
+# LaTeX medjufajlovi
+reports/*.aux
+reports/*.out
+reports/*.toc
+reports/*.synctex.gz

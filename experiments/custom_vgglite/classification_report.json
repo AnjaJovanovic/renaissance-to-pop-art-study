@@ -1,0 +1,123 @@
+{
+  "01_Byzantin_Iconography": {
+    "precision": 0.555,
+    "recall": 0.8740157480314961,
+    "f1-score": 0.6788990825688074,
+    "support": 127.0
+  },
+  "02_Early_Renaissance": {
+    "precision": 0.25405405405405407,
+    "recall": 0.41964285714285715,
+    "f1-score": 0.3164983164983165,
+    "support": 112.0
+  },
+  "03_Northern_Renaissance": {
+    "precision": 0.2831858407079646,
+    "recall": 0.2601626016260163,
+    "f1-score": 0.2711864406779661,
+    "support": 123.0
+  },
+  "04_High_Renaissance": {
+    "precision": 0.36538461538461536,
+    "recall": 0.456,
+    "f1-score": 0.40569395017793597,
+    "support": 125.0
+  },
+  "05_Baroque": {
+    "precision": 0.3114754098360656,
+    "recall": 0.38513513513513514,
+    "f1-score": 0.34441087613293053,
+    "support": 148.0
+  },
+  "06_Rococo": {
+    "precision": 0.3855421686746988,
+    "recall": 0.256,
+    "f1-score": 0.3076923076923077,
+    "support": 125.0
+  },
+  "07_Romanticism": {
+    "precision": 0.5,
+    "recall": 0.09701492537313433,
+    "f1-score": 0.1625,
+    "support": 134.0
+  },
+  "08_Realism": {
+    "precision": 0.3624161073825503,
+    "recall": 0.3,
+    "f1-score": 0.3282674772036474,
+    "support": 180.0
+  },
+  "09_Impressionism": {
+    "precision": 0.28337874659400547,
+    "recall": 0.5502645502645502,
+    "f1-score": 0.37410071942446044,
+    "support": 189.0
+  },
+  "10_Post_Impressionism": {
+    "precision": 0.311284046692607,
+    "recall": 0.4166666666666667,
+    "f1-score": 0.35634743875278396,
+    "support": 192.0
+  },
+  "11_Expressionism": {
+    "precision": 0.24324324324324326,
+    "recall": 0.05844155844155844,
+    "f1-score": 0.09424083769633508,
+    "support": 154.0
+  },
+  "12_Symbolism": {
+    "precision": 0.3968253968253968,
+    "recall": 0.15723270440251572,
+    "f1-score": 0.22522522522522523,
+    "support": 159.0
+  },
+  "13_Fauvism": {
+    "precision": 0.3115942028985507,
+    "recall": 0.39814814814814814,
+    "f1-score": 0.34959349593495936,
+    "support": 108.0
+  },
+  "14_Cubism": {
+    "precision": 0.375,
+    "recall": 0.5217391304347826,
+    "f1-score": 0.43636363636363634,
+    "support": 184.0
+  },
+  "15_Surrealism": {
+    "precision": 0.3333333333333333,
+    "recall": 0.22981366459627328,
+    "f1-score": 0.27205882352941174,
+    "support": 161.0
+  },
+  "16_AbstractArt": {
+    "precision": 0.49295774647887325,
+    "recall": 0.22012578616352202,
+    "f1-score": 0.30434782608695654,
+    "support": 159.0
+  },
+  "17_NaiveArt": {
+    "precision": 0.2796610169491525,
+    "recall": 0.2088607594936709,
+    "f1-score": 0.2391304347826087,
+    "support": 158.0
+  },
+  "18_PopArt": {
+    "precision": 0.44559585492227977,
+    "recall": 0.5119047619047619,
+    "f1-score": 0.47645429362880887,
+    "support": 168.0
+  },
+  "accuracy": 0.3514412416851441,
+  "macro avg": {
+    "precision": 0.36055176577652165,
+    "recall": 0.3511760554347272,
+    "f1-score": 0.33016728790983874,
+    "support": 2706.0
+  },
+  "weighted avg": {
+    "precision": 0.3597913912246304,
+    "recall": 0.3514412416851441,
+    "f1-score": 0.33020972674670823,
+    "support": 2706.0
+  }
+}

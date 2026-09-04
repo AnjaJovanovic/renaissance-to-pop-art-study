@@ -40,8 +40,8 @@ Detaljno poređenje dense vs fine-tune: `experiments/comparison_transfer.md`.
 
 | Model              | Learning curves                                | Confusion matrix                                  |
 | ------------------ | ---------------------------------------------- | ------------------------------------------------- |
-| VGG-lite           | `reports/figures/vgglite_curves.png`           | /                                                 |
-| Hibrid             | `reports/figures/hybrid_curves.png`            | /                                                 |
+| VGG-lite           | `reports/figures/vgglite_curves.png`           | `reports/figures/vgglite_confusion.png`           |
+| Hibrid             | `reports/figures/hybrid_curves.png`            | `reports/figures/hybrid_confusion.png`            |
 | Transfer dense     | `reports/figures/transfer_dense_curves.png`    | `reports/figures/transfer_dense_confusion.png`    |
 | Transfer fine-tune | `reports/figures/transfer_finetune_curves.png` | `reports/figures/transfer_finetune_confusion.png` |
 

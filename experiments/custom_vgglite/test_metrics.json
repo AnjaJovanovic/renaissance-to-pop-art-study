@@ -1,4 +1,11 @@
 {
+  "model": "vgglite",
+  "weights": "experiments/custom_vgglite/best.keras",
+  "image_size": 224,
+  "params": 1242674,
   "test_accuracy": 0.35144123435020447,
-  "test_loss": 1.9121
+  "test_loss": 1.912142038345337,
+  "macro_f1": 0.33016728790983874,
+  "weighted_f1": 0.33020972674670823,
+  "num_test_images": 2706
 }

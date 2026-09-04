@@ -96,7 +96,8 @@ finalnu evaluaciju.
 
 Najbolji je **fine-tune poslednjeg Inception bloka** — 56.91%, u referentnom opsegu iz rada
 koji se replicira (56.6%) i preko deset puta iznad slučajnog pogađanja (5.56%). Detaljno
-poređenje je u `experiments/comparison_all.md` i `experiments/comparison_transfer.md`.
+poređenje je u `experiments/comparison_all.md` i `experiments/comparison_transfer.md`, a
+ceo pisani izveštaj u [`reports/izvestaj.pdf`](reports/izvestaj.pdf).
 
 ### Preuzimanje istreniranih modela
 
@@ -112,6 +113,18 @@ unzip models.zip          # iz korena repozitorijuma
 Putanje u arhivi su relativne prema korenu, pa svaki model završi u svom
 `experiments/<eksperiment>/best.keras`, uz pripadajući `run_config.json`. Posle toga se
 evaluacija pokreće bez ponovnog treniranja.
+
+Custom modeli (`custom_vgglite`, `custom_hybrid`) su trenirani na Colab-u i sačuvani
+**Keras 3** formatom, pa ih `tf-keras` ne učitava direktno (`Could not deserialize class
+'Functional'`). Konverzija je jedno pokretanje — težine se pročitaju Keras-om 3, upišu u
+arhitekturu iz `src/models.py` i sačuvaju nazad:
+
+```bash
+TF_USE_LEGACY_KERAS=0 python -c "import keras,numpy as np; np.savez('/tmp/w.npz', *keras.saving.load_model('experiments/custom_vgglite/best.keras', compile=False).get_weights())"
+python -c "import sys; sys.path.insert(0,'src'); import numpy as np; from models import build_vgglite; z=np.load('/tmp/w.npz'); m=build_vgglite(); m.set_weights([z[k] for k in sorted(z.files, key=lambda s:int(s.split('_')[1]))]); m.save('experiments/custom_vgglite/best.keras')"
+```
+
+Transfer modeli su sačuvani lokalno i učitavaju se bez konverzije.
 
 ## Podešavanje okruženja
 
@@ -183,7 +196,10 @@ src/
 notebooks/            sveske u redosledu pregledanja (01, 02, ...)
 data/splits/          fiksirane train/val/test liste putanja
 experiments/          po modelu: history.csv/json, run_config.json, test_metrics.json
-reports/figures/      figure za izvestaj
+reports/
+  izvestaj.tex        izvor pisanog izvestaja (LaTeX)
+  izvestaj.pdf        prevedeni izvestaj
+  figures/            figure, iste one koje izvestaj ukljucuje
 ```
 
 Sveske se pregledaju po prefiksu:
@@ -336,8 +352,8 @@ Sveske dodatno drže figure u svojim izlazima, tako da se vide i bez ponovnog po
 - Y. Yu, O. Jin, D. Hsu. *Artistic Movement Recognition using Deep CNNs.* Stanford
   University, CS231n, 2017.
   [cs231n.stanford.edu/reports/2017/pdfs/411.pdf](https://cs231n.stanford.edu/reports/2017/pdfs/411.pdf)
-  — polazna tačka za temu i arhitekture; njihova hibridna VGG + Inception mreža trenirana
-  od nule postiže 31.2%, a najbolji rezultat transfer learning-om na InceptionV3 iznosi
-  56.6%.
+  — polazna tačka za temu i arhitekture; njihov VGG-lite treniran od nule postiže oko 31%,
+  hibridna VGG + Inception mreža oko 36%, a najbolji rezultat transfer learning-om na
+  InceptionV3 iznosi 56–57%.
 - Dokumentacija Keras / TensorFlow: `ImageDataGenerator`, `InceptionV3`, transfer learning
   i fine-tuning.

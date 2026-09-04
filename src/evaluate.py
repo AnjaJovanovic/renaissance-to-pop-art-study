@@ -37,6 +37,14 @@ def resolve_exp_dir(args):
     return ROOT / "experiments" / f"custom_{args.model}"
 
 
+def exp_name(args, exp_dir):
+    # kad je zadat --exp-dir, ime se izvodi iz foldera, da figura ne bi
+    # zavrsila pod podrazumevanim --model imenom i pregazila tudju
+    if args.exp_dir:
+        return exp_dir.name.removeprefix("custom_")
+    return args.model
+
+
 def _rel_to_root(path):
     # eksperiment moze biti i van repoa, pa relative_to nije uvek moguc
     try:
@@ -84,6 +92,7 @@ def plot_confusion(cm, names, out_paths, title):
 def main():
     args = parse_args()
     exp_dir = resolve_exp_dir(args)
+    model_name = exp_name(args, exp_dir)
     model_path = exp_dir / args.weights
     if not model_path.is_file():
         raise SystemExit(f"nema modela na putanji: {model_path}")
@@ -118,7 +127,7 @@ def main():
     cm = confusion_matrix(y_true, y_pred, labels=range(len(names)))
 
     metrics = {
-        "model": args.model,
+        "model": model_name,
         "weights": _rel_to_root(model_path),
         "image_size": image_size,
         "params": int(model.count_params()),
@@ -142,9 +151,9 @@ def main():
         names,
         [
             exp_dir / "confusion_matrix.png",
-            ROOT / "reports" / "figures" / f"{args.model}_confusion.png",
+            ROOT / "reports" / "figures" / f"{model_name}_confusion.png",
         ],
-        f"Matrica konfuzije — {args.model}",
+        f"Matrica konfuzije — {model_name}",
     )
 
     print()
