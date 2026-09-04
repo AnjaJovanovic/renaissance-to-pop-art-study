@@ -114,17 +114,15 @@ Putanje u arhivi su relativne prema korenu, pa svaki model završi u svom
 `experiments/<eksperiment>/best.keras`, uz pripadajući `run_config.json`. Posle toga se
 evaluacija pokreće bez ponovnog treniranja.
 
-Custom modeli (`custom_vgglite`, `custom_hybrid`) su trenirani na Colab-u i sačuvani
-**Keras 3** formatom, pa ih `tf-keras` ne učitava direktno (`Could not deserialize class
-'Functional'`). Konverzija je jedno pokretanje — težine se pročitaju Keras-om 3, upišu u
-arhitekturu iz `src/models.py` i sačuvaju nazad:
+Svi modeli u release-u su u **Keras 2** formatu i učitavaju se direktno. Ako sam treniraš
+custom model na Colab-u, koji podrazumevano čuva **Keras 3** formatom, `tf-keras` ga neće
+učitati (`Could not deserialize class 'Functional'`). Konverzija je jedno pokretanje —
+težine se pročitaju Keras-om 3, upišu u arhitekturu iz `src/models.py` i sačuvaju nazad:
 
 ```bash
 TF_USE_LEGACY_KERAS=0 python -c "import keras,numpy as np; np.savez('/tmp/w.npz', *keras.saving.load_model('experiments/custom_vgglite/best.keras', compile=False).get_weights())"
 python -c "import sys; sys.path.insert(0,'src'); import numpy as np; from models import build_vgglite; z=np.load('/tmp/w.npz'); m=build_vgglite(); m.set_weights([z[k] for k in sorted(z.files, key=lambda s:int(s.split('_')[1]))]); m.save('experiments/custom_vgglite/best.keras')"
 ```
-
-Transfer modeli su sačuvani lokalno i učitavaju se bez konverzije.
 
 ## Podešavanje okruženja
 
