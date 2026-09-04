@@ -14,9 +14,15 @@ from sklearn.metrics import classification_report, confusion_matrix
 from tensorflow import keras
 
 from dataset import IMAGE_SIZE, make_generators
+from models import build_hybrid, build_vgglite
 
 # repo root je jedan nivo iznad src/
 ROOT = Path(__file__).resolve().parents[1]
+
+CUSTOM_BUILDERS = {
+    "vgglite": build_vgglite,
+    "hybrid": build_hybrid,
+}
 
 
 def parse_args():
@@ -64,6 +70,18 @@ def resolve_image_size(args, exp_dir):
     return IMAGE_SIZE
 
 
+def load_model_for_eval(model_name, model_path, image_size, num_classes):
+    try:
+        return keras.models.load_model(model_path)
+    except (TypeError, ValueError, OSError):
+        builder = CUSTOM_BUILDERS.get(model_name)
+        if builder is None:
+            raise
+        model = builder(num_classes=num_classes, input_size=image_size)
+        model.load_weights(str(model_path))
+        return model
+
+
 def plot_confusion(cm, names, out_paths, title):
     # normalizovana po redu -> vidi se recall po klasi
     with np.errstate(invalid="ignore"):
@@ -103,7 +121,7 @@ def main():
         batch_size=args.batch_size,
     )
 
-    model = keras.models.load_model(model_path)
+    model = load_model_for_eval(args.model, model_path, image_size, len(names))
     # sklopljeni modeli (npr. transfer) ne moraju stici sa compile konfiguracijom,
     # a evaluate() je trazi; za evaluaciju je optimizator nebitan
     model.compile(
